@@ -1,7 +1,8 @@
 import scapy.all as scapy
 import ifaddr
 import time
-import socket, struct
+import socket
+import struct
 
 def get_default_gateway_linux():
     adapters = ifaddr.get_adapters()
@@ -18,6 +19,8 @@ def get_default_gateway_linux():
                 continue
             gateway_ip = socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
             return f"{gateway_ip}/{prefix}"
+
+
 print(get_default_gateway_linux())
 
 start_time = time.time()
@@ -28,4 +31,3 @@ scan_duration = end_time - start_time
 num_hosts_scanned = len(result[0])
 
 print("\nNumber of hosts scanned:", num_hosts_scanned, "Scan duration: %.2f seconds" % scan_duration)
-print("Scan duration: %.2f seconds" % scan_duration)
