@@ -1,7 +1,6 @@
 import scapy.all as scapy
 import ifaddr
 import time
-import os
 import socket, struct
 
 def get_default_gateway_linux():
@@ -20,10 +19,6 @@ def get_default_gateway_linux():
             gateway_ip = socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
             return f"{gateway_ip}/{prefix}"
 print(get_default_gateway_linux())
-
-#Manual Insertion of the IP and subnetmask
-#IP_entered = input(
- #   "\nEnter the IP addres to analize (ex 192.168.1.0/24): ")
 
 start_time = time.time()
 result = scapy.arping(get_default_gateway_linux())
