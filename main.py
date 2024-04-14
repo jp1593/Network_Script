@@ -1,15 +1,36 @@
 import scapy.all as scapy
 import ifaddr
 import time
-import socket, struct
 import os
+import socket, struct
 
-IP_entered = input(
-    "\nEnter the IP addres to analize (ex 192.168.1.0/24): ")
+def get_default_gateway_linux():
+    adapters = ifaddr.get_adapters()
+    for adapter in adapters:
+        if adapter.nice_name == "wlp0s20f3":
+            for ip in adapter.ips:
+                    prefix = ip.network_prefix
+                    break
+
+    with open("/proc/net/route") as fh:
+        for line in fh:
+            fields = line.strip().split()
+            if fields[1] != '00000000' or not int(fields[3], 16) & 2:
+                continue
+            gateway_ip = socket.inet_ntoa(struct.pack("<L", int(fields[2], 16)))
+            return f"{gateway_ip}/{prefix}"
+print(get_default_gateway_linux())
+
+#Manual Insertion of the IP and subnetmask
+#IP_entered = input(
+ #   "\nEnter the IP addres to analize (ex 192.168.1.0/24): ")
 
 start_time = time.time()
-result = scapy.arping(IP_entered)
+result = scapy.arping(get_default_gateway_linux())
 end_time = time.time()
-
 scan_duration = end_time - start_time
-print("\nScan duration: %.2f seconds" % scan_duration)
+
+num_hosts_scanned = len(result[0])
+
+print("\nNumber of hosts scanned:", num_hosts_scanned, "Scan duration: %.2f seconds" % scan_duration)
+print("Scan duration: %.2f seconds" % scan_duration)
